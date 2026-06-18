@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Explorer</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (lightweight icon library) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <i data-lucide="database" class="icon-gcp-blue"></i>
+                    <i data-lucide="sparkles" class="icon-gcp-yellow overlay-sparkle"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <span>Release Explorer</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="btn-refresh" class="btn btn-secondary" title="Refresh Release Notes">
+                    <i data-lucide="refresh-cw" id="spinner-icon"></i>
+                    <span>Refresh</span>
+                </button>
+                <button id="btn-theme" class="btn btn-icon" title="Toggle Theme">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-content">
+            
+            <!-- Feed Section (Left/Center) -->
+            <section class="feed-section">
+                <!-- Search & Filters Container -->
+                <div class="controls-card">
+                    <div class="search-box">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search updates (press '/' to focus)..." autocomplete="off">
+                        <button id="search-clear" class="btn-clear" style="display: none;">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filters-container">
+                        <span class="filter-label">Filter by:</span>
+                        <div class="filter-chips" id="filter-chips">
+                            <button class="chip active" data-type="all">All Updates</button>
+                            <button class="chip" data-type="Feature"><i data-lucide="plus-circle"></i> Features</button>
+                            <button class="chip" data-type="Announcement"><i data-lucide="megaphone"></i> Announcements</button>
+                            <button class="chip" data-type="Breaking"><i data-lucide="alert-triangle"></i> Breaking</button>
+                            <button class="chip" data-type="Change"><i data-lucide="git-commit"></i> Changes</button>
+                            <button class="chip" data-type="Issue"><i data-lucide="bug"></i> Issues</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed Listings -->
+                <div id="notes-feed" class="notes-feed">
+                    <!-- Skeleton loading cards (shown by default) -->
+                    <div class="skeleton-entry">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                    <div class="skeleton-entry">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Composer Sidebar (Right) -->
+            <aside class="composer-sidebar" id="composer-sidebar">
+                <div class="composer-header">
+                    <h2>Tweet Composer</h2>
+                    <p class="composer-subtitle">Draft a post to share on Twitter/X</p>
+                    <button class="btn-icon btn-close-composer" id="btn-close-composer" title="Close Panel">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+
+                <div class="composer-body">
+                    <!-- Twitter Mockup Card -->
+                    <div class="twitter-preview-card">
+                        <div class="twitter-preview-header">
+                            <div class="twitter-avatar">
+                                <i data-lucide="database"></i>
+                            </div>
+                            <div class="twitter-user-info">
+                                <span class="twitter-name">GCP Release Notes <i data-lucide="badge-check" class="twitter-verified-badge"></i></span>
+                                <span class="twitter-handle">@BigQueryRelease</span>
+                            </div>
+                            <span class="twitter-logo-x">𝕏</span>
+                        </div>
+                        <div class="twitter-preview-text" id="twitter-preview-text">
+                            Select a release note card to start drafting your Tweet.
+                        </div>
+                        <div class="twitter-preview-footer">
+                            <span class="twitter-timestamp">1:25 PM · Jun 18, 2026</span>
+                            <span class="twitter-divider">·</span>
+                            <span class="twitter-views"><strong>1.2K</strong> Views</span>
+                        </div>
+                        <div class="twitter-preview-actions">
+                            <span><i data-lucide="message-square"></i> 0</span>
+                            <span><i data-lucide="repeat"></i> 0</span>
+                            <span><i data-lucide="heart"></i> 0</span>
+                            <span><i data-lucide="bookmark"></i></span>
+                            <span><i data-lucide="share"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Editor Inputs -->
+                    <div class="composer-controls">
+                        <div class="editor-header">
+                            <label for="tweet-textarea">Compose Message</label>
+                            <div class="char-counter-container">
+                                <svg class="progress-ring" width="20" height="20">
+                                    <circle class="progress-ring__circle-bg" stroke="#e2e8f0" stroke-width="2" fill="transparent" r="8" cx="10" cy="10"/>
+                                    <circle class="progress-ring__circle" stroke="#1da1f2" stroke-width="2" fill="transparent" r="8" cx="10" cy="10"/>
+                                </svg>
+                                <span id="char-count">280</span>
+                            </div>
+                        </div>
+                        <textarea id="tweet-textarea" class="tweet-textarea" placeholder="Select an update or write something..." maxlength="1000"></textarea>
+                        
+                        <div class="composer-tools">
+                            <button id="tool-auto" class="btn btn-sm btn-tool" title="Auto-format draft from selection">
+                                <i data-lucide="sparkles"></i> Auto-Format
+                            </button>
+                            <button id="tool-tags" class="btn btn-sm btn-tool" title="Add Google Cloud Hashtags">
+                                <i data-lucide="hash"></i> Add Tags
+                            </button>
+                            <button id="tool-link" class="btn btn-sm btn-tool" title="Add source link">
+                                <i data-lucide="link"></i> Add Link
+                            </button>
+                            <button id="tool-shorten" class="btn btn-sm btn-tool" title="Shorten content to fit 280 chars">
+                                <i data-lucide="scissors"></i> Shorten
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="composer-actions">
+                        <button id="btn-tweet" class="btn btn-primary btn-block">
+                            <span class="btn-content">
+                                <span class="x-icon">𝕏</span> Share on Twitter/X
+                            </span>
+                        </button>
+                        <button id="btn-copy" class="btn btn-secondary btn-block">
+                            <i data-lucide="copy"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <i data-lucide="info" id="toast-icon"></i>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- Lucide icons initialization script -->
+    <script>
+        // Init Lucide icons initially
+        lucide.createIcons();
+    </script>
+    <!-- Main JS Application File -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
